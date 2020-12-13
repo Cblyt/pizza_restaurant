@@ -1,0 +1,9 @@
+<?php
+    echo "<form action='simpleLoginCheck.php' method='POST'>";
+    echo "Username ";
+    echo "<input name='txtUsername' type='text' required />";
+    echo "<br />Password ";
+    echo "<input name='txtPassword' type='password' required />";
+    echo "<br /> <input type='submit' value='login' />";
+    echo "</form>";
+?>
