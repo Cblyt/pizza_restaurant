@@ -23,6 +23,8 @@ class CreateUsersTable extends Migration
             $table->string('address_postcode');
             $table->string('email');
             $table->string('password', 60);
+            $table->string('hash', 32)->nullable();
+            $table->boolean('active')->default(False);
         });
     }
     

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\VerificationEmail;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class RegisterController extends Controller
 {
@@ -18,7 +20,7 @@ class RegisterController extends Controller
         $userdata = $request->validate([
             'fname' => ['required', 'string'],
             'lname' => ['required', 'string'],
-            'email' => ['required', 'string'],
+            'email' => ['required', 'string', 'unique:users'],
             'dob' => ['required', 'string'],
             'address_houseno' => ['required', 'string'],
             'address_streetname' => ['required', 'string'],

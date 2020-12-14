@@ -12,16 +12,18 @@
         name="password" autofocus>
     </div>
     
-    @isset($loginfail)
-    <div style='color:red'>{{ $loginfail }}</div>
-    @endisset
-    
     <div class="form-group row mb-0">
         <button type="submit" class="btn btn-primary">Sign In</button>
     </div>
 
     <input type="hidden" name="recaptcha" id="recaptcha">
 </form>
+
+@if($errors->any())
+<div style='color:red'>{{$errors->first()}}</div>
+@endif
+
+<button type="button" onclick="window.location='{{ route('registerForm') }}'" class="btn btn-primary">Register</button>
 
 <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.sitekey') }}"></script>
 <script>

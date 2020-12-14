@@ -52,12 +52,22 @@
         name="address_postcode" autofocus>
     </div>
 
-    @isset($errormsg)
-    <div style="color:red">{{ $errormsg }}</div>
-    @endisset
-
     <div class="form-group row mb-0">
         <button type="submit" class="btn btn-primary">Register</button>
     </div>
     
 </form>
+
+@if($errors->any())
+<div style='color:red'>{{$errors->first()}}</div>
+@endif
+
+@if ($errors->any())
+<div class="alert alert-danger">
+    <ul>
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
