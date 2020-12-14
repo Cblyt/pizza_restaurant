@@ -38,11 +38,28 @@ class RegisterController extends Controller
                 'address_postcode' => $userdata['address_postcode'],
                 'password' => Hash::make($userdata['password']),
             ]);
-            return view('login');
+            $this->sendVerificationEmail($request);
+            return redirect()->route('loginForm');
         } 
         else {
-            $error_msg = 'Passwords do not match';
-            return view('register')->with('errormsg', $error_msg);
+            return back()->withErrors(['Passwords do not match']);
         }
+    }
+
+    public function sendVerificationEmail(Request $request)
+    {
+        $user = User::get()->where('email', $request['email'])->first();
+        if($user!=null) {
+
+            $user->hash = md5(rand(0,1000));
+            $user->save();
+            $to = $request['email'];
+            Mail::to($to)->send(new VerificationEmail($to, $user->hash));
+        }
+        else
+        {
+            return back()->withErrors(['This email is not registered']);
+        }
+        return redirect()->route('loginForm');
     }
 }

@@ -20,20 +20,25 @@ class LoginController extends Controller
     public function loginCheck(Request $request) 
     {
         if (!$this->verifyCapatcha($request)) {
-            return view('login')->with('loginfail', 'ReCaptcha Error');
+            return back()->withErrors(['ReCaptcha Error']);
         };
+
         $this->validateLogin($request);
         $credentials = $request->only('email', 'password');
+
         if ($this->hasTooManyLoginAttempts($request)) {
             $this->fireLockoutEvent($request);
-            return view('login')->with('loginfail', 'You are locked out');
+            return back()->withErrors(['You are locked out']);
         }
+
+        // Successful login
         else if($this->attemptLogin($credentials)) {
             return view('welcome');
         }
+
         else {
             $this->countLoginAttempts($request);
-            return view('login')->with('loginfail', 'Incorrect Login');
+            return back()->withErrors(['Incorrect credentials']);
         };
     }
 
@@ -82,7 +87,7 @@ class LoginController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect('/login');
+        return redirect()->route('loginForm');
     }
 
     public function changePasswordForm()
@@ -101,20 +106,20 @@ class LoginController extends Controller
         // Check the confirm new password field is the same as the new password.
         if($this->confirmPassword($request))
         {
-            return view('changePassword')->with('errormsg', 'The new password does not match the confirmation');
+            return back()->withErrors(['The new password does not match the confirmation']);
         }
 
         // Check the new password is different to the original password
         else if($this->checKPasswordIsNew($request))
         {
-            return view('changePassword')->with('errormsg', 'Please choose a different password to the current password');          
+            return back()->withErrors(['Please choose a different password to the current password']);
         }
 
         // Check that the password given results in a successful login
         $credentials = ['email' => Auth::User()->email, 'password' => $request['password']];
         if(!$this->attemptLogin($credentials))
         {
-            return view('changePassword')->with('errormsg', 'Wrong password!');          
+            return back()->withErrors(['Wrong password!']);          
         }
         
         else
@@ -162,7 +167,7 @@ class LoginController extends Controller
     protected function countLoginAttempts(Request $request)
     {
         $this->limiter()->hit(
-            $this->throttleKey($request), $this->decayTime() * 60
+            $this->throttleKey($request), $this->lockoutTime() * 60
         );
     }
 
