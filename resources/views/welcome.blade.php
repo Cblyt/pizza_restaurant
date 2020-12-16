@@ -1,21 +1,16 @@
 <div>
     <div>Welcome!</div>                                 
     <div>
-        <a class="dropdown-item" href="/logout"
+        <button type="button"
         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
             Logout
-        </a>
+        </button>
         <form id="logout-form" action="/logout" method="POST" class="d-none">
             @csrf
         </form>
     </div>
     <div>
-        <a class="dropdown-item" href="/changepassword" 
-        onclick="event.preventDefault(); document.getElementById('change-password-form').submit();">
-            Change Password
-        </a>
-        <form id="change-password-form" action="/changepassword" method="Get" class="d-none">
-            @csrf
-        </form>
+        <button type="button" onclick="window.location='{{ route('change_password.show') }}'" 
+        class="btn btn-primary">Change Password</button>
     </div>
 </div>

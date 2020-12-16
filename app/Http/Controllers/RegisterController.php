@@ -10,12 +10,12 @@ use Illuminate\Support\Facades\Mail;
 
 class RegisterController extends Controller
 {
-    public function registerForm()
+    public function show()
     {
-        return view('register');
+        return view('register.index');
     }
 
-    protected function registerCheck(Request $request)
+    protected function store(Request $request)
     {
         $userdata = $request->validate([
             'fname' => ['required', 'string'],
@@ -41,7 +41,7 @@ class RegisterController extends Controller
                 'password' => Hash::make($userdata['password']),
             ]);
             $this->sendVerificationEmail($request);
-            return redirect()->route('loginForm');
+            return redirect()->route('login.show');
         } 
         else {
             return back()->withErrors(['Passwords do not match']);
@@ -50,18 +50,9 @@ class RegisterController extends Controller
 
     public function sendVerificationEmail(Request $request)
     {
-        $user = User::get()->where('email', $request['email'])->first();
-        if($user!=null) {
-
-            $user->hash = md5(rand(0,1000));
-            $user->save();
-            $to = $request['email'];
-            Mail::to($to)->send(new VerificationEmail($to, $user->hash));
-        }
-        else
-        {
-            return back()->withErrors(['This email is not registered']);
-        }
-        return redirect()->route('loginForm');
+        $user=auth()->user();
+        $user->generateVerificationHash();
+        Mail::to($user->email)->send(new VerificationEmail($user->email, $user->hash));
+        return redirect()->route('email_verification.index');
     }
 }

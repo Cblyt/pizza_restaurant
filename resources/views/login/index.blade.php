@@ -19,11 +19,17 @@
     <input type="hidden" name="recaptcha" id="recaptcha">
 </form>
 
-@if($errors->any())
-<div style='color:red'>{{$errors->first()}}</div>
+@if ($errors->any())
+<div class="alert alert-danger">
+    <ul>
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
 @endif
 
-<button type="button" onclick="window.location='{{ route('registerForm') }}'" class="btn btn-primary">Register</button>
+<button type="button" onclick="window.location='{{ route('register.show') }}'" class="btn btn-primary">Register</button>
 
 <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.sitekey') }}"></script>
 <script>

@@ -1,4 +1,4 @@
-<form method="POST" action="/changepassword">
+<form method="POST" action="/changePassword">
     @csrf
 
     <div class="form-group row">
@@ -19,14 +19,20 @@
         name="confnewpassword" autofocus>
     </div>
 
-    @isset($errormsg)
-        <div style="color:red">
-            {{ $errormsg }}
-        </div>
-    @endisset
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
 
     <div class="form-group row mb-0">
         <button type="submit" class="btn btn-primary">Register</button>
     </div>
+
+    <button type="button" onclick="window.location='{{ route('welcome') }}'" class="btn btn-primary">Home</button>
     
 </form>

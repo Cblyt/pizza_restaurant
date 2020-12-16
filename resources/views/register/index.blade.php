@@ -58,9 +58,7 @@
     
 </form>
 
-@if($errors->any())
-<div style='color:red'>{{$errors->first()}}</div>
-@endif
+<button type="button" onclick="window.location='{{ route('login.show') }}'" class="btn btn-primary">Login</button>
 
 @if ($errors->any())
 <div class="alert alert-danger">

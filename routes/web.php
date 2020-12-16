@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\VerifyController;
+use App\Http\Controllers\TwoFactorController;
+use App\Http\Controllers\EmailVerificationController;
+use App\Mail\TwoFactorAuthenticationEmail;
 use App\Mail\VerificationEmail;
 use Illuminate\Support\Facades\Route;
 
@@ -16,21 +19,36 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/email', function () {
-    return new VerificationEmail('test@test.com', '###');
-});
 
-Route::get('/register', [RegisterController::class, 'registerForm'])->name('registerForm');
-Route::post('/register', [RegisterController::class, 'registerCheck'])->name('registerCheck');
-Route::get('/login', [LoginController::class, 'loginForm'])->name('loginForm');
-Route::post('/login', [LoginController::class, 'loginCheck'])->name('loginCheck');
-Route::get('/verify', [VerifyController::class, 'verify'])->name('verify');
-Route::post('/newVerificationEmail', [RegisterController::class, 'sendVerificationEmail'])->name('newVerificationEmail');
+// Two Factor Routes (maybe need to make this for authenticated users)
+Route::post('/twoFactor/resend', [TwoFactorController::class, 'resend'])->name('twoFactor.resend');
+Route::post('/twoFactor/verify', [TwoFactorController::class, 'store'])->name('twoFactor.verify');
+Route::get('/twoFactor', [TwoFactorController::class, 'show'])->name('twoFactor.show');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/changepassword', [LoginController::class, 'changePasswordForm'])->name('changepasswordForm');
-    Route::post('/changepassword', [LoginController::class, 'changePassword'])->name('changepassword');
+// Register Routes
+Route::get('/register', [RegisterController::class, 'show'])->name('register.show');
+Route::post('/register', [RegisterController::class, 'store'])->name('register.check');
+
+// Login Routes
+Route::get('/login', [LoginController::class, 'show'])->name('login.show');
+Route::post('/login', [LoginController::class, 'store'])->name('login.check');
+
+// Email verification routes
+Route::post('/email_verification/resend', [EmailVerificationController::class, 'resend'])->name('email_verification.resend');
+Route::get('/email_verification/verify', [EmailVerificationController::class, 'store'])->name('email_verification.verify');
+Route::get('/email_verification', [EmailVerificationController::class, 'index'])->name('email_verification.index');
+
+
+/* 
+    Routes only accessible to an authenticated user, who's email has been verified
+    and has passed two factor authentication
+*/
+Route::middleware(['auth','twoFactor','emailVerify'])->group(function () {
+    // Change password routes
+    Route::get('/changePassword', [ChangePasswordController::class, 'show'])->name('change_password.show');
+    Route::post('/changePassword', [ChangePasswordController::class, 'store'])->name('change_password.check');
+    //Logout and welcome page route
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::get('/', function () { return view('welcome'); })->name('welcome');
+    Route::get('/', function () { return view('welcome'); })->name('welcome');
 });
 
