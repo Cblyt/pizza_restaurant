@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class VerificationEmail extends Mailable
+class TwoFactorAuthenticationEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -19,7 +19,7 @@ class VerificationEmail extends Mailable
     public function __construct(String $email, String $hash)
     {
         $this->email = $email;
-        $this->hash = $hash;      
+        $this->hash = $hash;
     }
 
     /**
@@ -29,6 +29,6 @@ class VerificationEmail extends Mailable
      */
     public function build()
     {
-        return $this->markdown('email_verification.verification-email')->with('email',$this->email)->with('hash', $this->hash);
+        return $this->markdown('twoFactor.authentication-email')->with('email', $this->email)->with('hash', $this->hash);
     }
 }
